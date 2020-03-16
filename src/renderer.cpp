@@ -32,6 +32,20 @@ Renderer::Renderer(const std::size_t screen_width,
 
   // Create renderer
   sdl_renderer = SDL_CreateRenderer(sdl_window, -1, SDL_RENDERER_ACCELERATED);
+  // try to create accelerated renderer first
+  if (!sdl_renderer)
+  {
+    SDL_Log("Unable to create accelerated renderer: %s", SDL_GetError());
+    // fallback to software renderer
+    sdl_renderer = SDL_CreateRenderer(sdl_window, -1, SDL_RENDERER_SOFTWARE);
+    if (!sdl_renderer)
+    {
+      SDL_Log("Unable to create software renderer: %s", SDL_GetError());
+      SDL_Quit();
+      exit(1);
+    }
+  }
+
   if (nullptr == sdl_renderer) {
     std::cerr << "Renderer could not be created.\n";
     std::cerr << "SDL_Error: " << SDL_GetError() << "\n";
